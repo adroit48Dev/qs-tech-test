@@ -78,8 +78,58 @@
 
 - git clone this repo
 
+`https://github.com/adroit48Dev/qs-tech-test.git`
 
-- type 
+- and type following docker cmd
 
 `docker-compose up`
 
+## APIs to check
+
+- site must be running in `0.0.0.0:5000` 
+- get currencies by date 
+  - `/api/currencies/2023-01-24` | parameter is date (yyyy-mm-dd)
+- get movements by date
+  - `/api/movements/2023-01-24` | parameter is date (yyyy-mm-dd)
+
+### sample output
+
+- currencies
+```
+    { 
+        rates: [
+    {
+    business_date: "2023-01-24",
+    currency_code: "AFN",
+    exchange_rate: 88.9231,
+    id: 517
+    },
+    {
+    business_date: "2023-01-24",
+    currency_code: "ALL",
+    exchange_rate: 106.895,
+    id: 518
+    },
+    ... ] }
+```
+
+- movements
+```
+    {
+    movements: [
+    {
+    country_name: "Afghanistan",
+    currency_code: "AFN",
+    movement: 0.02
+    },
+    {
+    country_name: "Albania",
+    currency_code: "ALL",
+    movement: -0.24
+    },
+    ... ] }
+```
+
+# ---------------------
+# - END
+# ---------------------

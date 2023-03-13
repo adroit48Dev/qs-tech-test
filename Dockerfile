@@ -18,11 +18,11 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 # Expose port 5000 for the Flask app to listen on
 EXPOSE 5000
 
-# Set the environment variable for Flask
-ENV FLASK_APP=app.py
+# initializing the db
+RUN flask init_db
 
 # Run the tests
 RUN python3 -m pytest tests/
 
 # Start the Flask app
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "--app", "app", "--debug", "run", "--host=0.0.0.0"]
