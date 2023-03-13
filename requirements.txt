@@ -1,0 +1,6 @@
+Flask
+pytest
+nose
+coverage
+pinocchio
+flask_sqlalchemy
