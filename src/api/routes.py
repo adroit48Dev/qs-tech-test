@@ -1,13 +1,16 @@
 from src import db, jsonify, status
 from . import currency_bp
 from flask import current_app
-from  src.models import CurrencyRates, logger
+from src.models import CurrencyRates, logger
 import src.status
 from datetime import *
 
-import os, csv, logging
+import os
+import csv
+import logging
 
 DATA_DIR = os.getcwd()
+
 
 def load_db():
     # initialize database
@@ -19,8 +22,8 @@ def load_db():
     existing_files = os.listdir(data_dir)
 
     for file_name in existing_files:
-    # check if the file is a regular file and has .csv extension
-        if file_name.endswith('.csv'): # check if the file is a CSV file
+        # check if the file is a regular file and has .csv extension
+        if file_name.endswith('.csv'):  # check if the file is a CSV file
             file_path = os.path.join(data_dir, file_name)
 
             with open(file_path) as f:
@@ -29,21 +32,24 @@ def load_db():
                 next(reader)  # skip header row
                 for row in reader:
                     try:
-                        logging.info("Flask app is initializing with database and table")
-                        business_date = datetime.strptime(row[0], '%d/%m/%Y').date()
+                        logging.info(
+                            "Flask app is initializing with database and table")
+                        business_date = datetime.strptime(
+                            row[0], '%d/%m/%Y').date()
                         country_name = row[1]
                         currency_code = row[2]
                         exchange_rate = float(row[3])
                     except (ValueError, IndexError) as e:
-                        logging.error(f'Invalid data in line {reader.line_num}: {e}')
+                        logging.error(
+                            f'Invalid data in line {reader.line_num}: {e}')
                         continue
-                    
+
                     currency_rate = CurrencyRates(business_date=business_date, country_name=country_name,
-                                                    currency_code=currency_code, exchange_rate=exchange_rate)
+                                                  currency_code=currency_code, exchange_rate=exchange_rate)
                     db.session.add(currency_rate)
                     db.session.commit()
-    
-    
+
+
 # Home Route
 @currency_bp.route('/')
 def home():
@@ -55,7 +61,8 @@ def home():
 @currency_bp.route('/api/currencies/<date>', methods=['GET'])
 def get_all_currency(date):
     try:
-        currency_rates = CurrencyRates.query.filter_by(business_date=date).all()
+        currency_rates = CurrencyRates.query.filter_by(
+            business_date=date).all()
         current_app.logger.info(f"Request to create DB")
         results = [
             {
@@ -71,7 +78,6 @@ def get_all_currency(date):
         current_app.logger.warning(f"Error while creating DB: {e}")
 
 
-
 # Getting Movements from currency rates
 @currency_bp.route('/api/movements/<date>', methods=['GET'])
 def movements(date):
@@ -82,47 +88,41 @@ def movements(date):
         date = datetime.strptime(date, '%Y-%m-%d').date()
     except ValueError:
         return 'Invalid date format. Please use the format yyyy-mm-dd', 400
-    
-    prev_day_rates = CurrencyRates.query.filter(CurrencyRates.business_date == date).all()
-    prev_day_rates_dict = {(rate.currency_code, rate.country_name): rate for rate in prev_day_rates}
-   
+
+    prev_day_rates = CurrencyRates.query.filter(
+        CurrencyRates.business_date == date).all()
+    prev_day_rates_dict = {
+        (rate.currency_code, rate.country_name): rate for rate in prev_day_rates}
+
     if not prev_day_rates_dict:
         return jsonify({"message": 'No data found for the requested date'}), status.HTTP_404_NOT_FOUND
-   
+
     prev_business_date = prev_day_rates[0].business_date - timedelta(days=1)
-    prev_day_rates = CurrencyRates.query.filter(CurrencyRates.business_date == prev_business_date).all()
-    
+    prev_day_rates = CurrencyRates.query.filter(
+        CurrencyRates.business_date == prev_business_date).all()
+
     movements = []
-    
+
     try:
         for rate in prev_day_rates:
-            prev_rate = prev_day_rates_dict.get((rate.currency_code, rate.country_name))
-            
+            prev_rate = prev_day_rates_dict.get(
+                (rate.currency_code, rate.country_name))
+
             if prev_rate:
-                movement = (1 - rate.exchange_rate / prev_rate.exchange_rate) * 100
+                movement = (1 - rate.exchange_rate /
+                            prev_rate.exchange_rate) * 100
                 movements.append({'country_name': rate.country_name, 'currency_code': rate.currency_code,
-                                'movement': round(movement, 2)})
-                
-        if len(movements) == 0: # if no data found for movements
-                print("no content")
-                return jsonify({"message": "Movements are not captured due to lack of data."}, status.HTTP_204_NO_CONTENT)
-       
-        current_app.logger.info('Successfully calculate movements.')        
+                                  'movement': round(movement, 2)})
+
+        if len(movements) == 0:  # if no data found for movements
+            print("no content")
+            return jsonify({"message": "Movements are not captured due to lack of data."}, status.HTTP_204_NO_CONTENT)
+
+        current_app.logger.info('Successfully calculate movements.')
         return jsonify({'movements': movements}, status.HTTP_200_OK)
-   
+
     except ValueError as e:
-        current_app.logger.warning(f'Something went wrong while getting movements: {e}')
+        current_app.logger.warning(
+            f'Something went wrong while getting movements: {e}')
         return jsonify({'Error': e}, 400)
 
-# current_app.register_blueprint(currency_bp)
-
-# if __name__ == "__main__":
-#     if not os.path.exists( DATA_DIR +'/instance/currency_data.db'):
-#         db.create_all()
-#         load_db()
-#     print("DB has been initialized with data!")
-#     app.run(debug=True)
-        
-   
-    
-    

@@ -10,31 +10,30 @@ import logging
 # getting logger
 logger = logging.getLogger()
 logging.basicConfig(
-    filename = 'currency.log', 
-    level=logging.DEBUG, 
+    filename='currency.log',
+    level=logging.DEBUG,
     format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s'
-    )
+)
 
 # Currency Model
+
+
 class CurrencyRates(db.Model):
     """ Currency Rate table to hold day wise currency rates"""
     __tablename__ = 'currency_rates'
-    id = db.Column(db.Integer, primary_key=True )
+    id = db.Column(db.Integer, primary_key=True)
     business_date = db.Column(db.Date)
     country_name = db.Column(db.String(50))
     currency_code = db.Column(db.String(5))
     exchange_rate = db.Column(db.Float)
-    
-       
+
     def __repr__(self):
         """ Represents Data from Currency rate table"""
         return f'<CurrencyRates {self.business_date} {self.currency_code} {self.exchange_rate}>'
-    
-    
+
     @staticmethod
     def get_movement(current_rate, previous_rate):
         return (1 - (current_rate.exchange_rate / previous_rate.exchange_rate)) * 100
-    
 
     ##################################################
     # CLASS METHODS
@@ -57,6 +56,3 @@ class CurrencyRates(db.Model):
         """
         logger.info("Processing lookup for date %s ...", date)
         return cls.query.get(date)
-    
-  
-   
