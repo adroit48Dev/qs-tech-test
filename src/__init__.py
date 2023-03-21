@@ -66,6 +66,7 @@ def configure_logging(app):
         file_formatter = logging.Formatter('%(asctime)s %(levelname)s %(threadName)s-%(thread)d: %(message)s [in %(filename)s:%(lineno)d]')
         file_handler.setFormatter(file_formatter)
         file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.WARNING)
         app.logger.addHandler(file_handler)
 
     app.logger.removeHandler(default_handler)
@@ -82,4 +83,6 @@ def register_cli_commands(app):
         from src.api.routes import load_db
         load_db()
        
+
+
 

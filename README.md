@@ -96,8 +96,8 @@
 
 - currencies
 ```
-    { 
-        rates: [
+    
+    rates: [
     {
     business_date: "2023-01-24",
     currency_code: "AFN",
@@ -110,12 +110,12 @@
     exchange_rate: 106.895,
     id: 518
     },
-    ... ] }
+    ... ] 
 ```
 
 - movements
 ```
-    {
+    
     movements: [
     {
     country_name: "Afghanistan",
@@ -127,7 +127,7 @@
     currency_code: "ALL",
     movement: -0.24
     },
-    ... ] }
+    ... ] 
 ```
 
 # ---------------------

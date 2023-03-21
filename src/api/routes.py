@@ -32,7 +32,7 @@ def load_db():
                 next(reader)  # skip header row
                 for row in reader:
                     try:
-                        logging.info(
+                        current_app.logger.info(
                             "Flask app is initializing with database and table")
                         business_date = datetime.strptime(
                             row[0], '%d/%m/%Y').date()
@@ -40,8 +40,8 @@ def load_db():
                         currency_code = row[2]
                         exchange_rate = float(row[3])
                     except (ValueError, IndexError) as e:
-                        logging.error(
-                            f'Invalid data in line {reader.line_num}: {e}')
+                        current_app.logger.warning(
+                            f'Invalid data in line {reader.line_num}: {e} in file name: {file_name}' )
                         continue
 
                     currency_rate = CurrencyRates(business_date=business_date, country_name=country_name,
@@ -125,4 +125,5 @@ def movements(date):
         current_app.logger.warning(
             f'Something went wrong while getting movements: {e}')
         return jsonify({'Error': e}, 400)
+
 

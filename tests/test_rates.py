@@ -6,6 +6,7 @@ Test cases for testing getting currency data
     
 """
 import pytest
+import status
 from src import create_app
 import logging
 
@@ -69,4 +70,4 @@ def test_movements(client):
         if data in dat:
             test_app.logger.info(f"{data} in movements, hence test passing.")
             assert d == data
-    assert res.status_code == 200
+    assert res.status_code == status.H
